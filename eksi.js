@@ -1,21 +1,7 @@
-    const puppeteer = require('puppeteer');
-
-// // CREATE DATABASE
-// var mysql = require('mysql');
-// db_conf = require('./db.json')
-// var con = mysql.createConnection(Object.assign(db_conf)); // overwrite object
-
-// con.connect( err => {
-//     if (err) throw err;
-//     console.log("Connected!");
-//     con.query("CREATE DATABASE IF NOT EXISTS mydb ", (err, result) => {
-//         if (err) throw err;
-//         console.log("Database created");
-//     });
-// });
+const puppeteer = require('puppeteer');
 
 (async() => {
-    var username = "ssg"
+    var username = process.argv.slice(-1).toString()
     const browser = await puppeteer.launch({
         // headless: false,
         // slowMo: 10
@@ -36,7 +22,12 @@
     var i = 0
     while (changed && i < counter){
         await page.click("#profile-stats-sections > a")
-        .then(()=> console.log(i++))
+        .then(()=> {
+            if ( (i+1) % 5 == 0){
+                console.log((i+1)*10 + " entry işlendi, az sabır!")
+            }
+            i++;
+        })
         .catch(() => changed=false);
         await autoScroll(page);
     }
@@ -51,9 +42,9 @@
     Array.from(document.querySelectorAll('div > ul > li > a[target=_blank]'),
     element => element.textContent));
 
-    for (user of userlist){
-        console.log(user)
-    }
+    // for (user of userlist){
+    //     console.log(user)
+    // }
     await browser.close();
 
     table = {}
