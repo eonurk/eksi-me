@@ -2,6 +2,8 @@ const puppeteer = require('puppeteer');
 
 (async() => {
     var username = process.argv.slice(-1).toString()
+    // var counter = Integer process.argv.slice(-1)
+    // console.log(counter)
     const browser = await puppeteer.launch({
         // headless: false,
         // slowMo: 10
@@ -18,7 +20,7 @@ const puppeteer = require('puppeteer');
     await page.goto('http://eksisozluk.com/biri/'+ username);
     
     let changed = true;
-    const counter = 10
+    var counter = 50
     var i = 0
     while (changed && i < counter){
         await page.click("#profile-stats-sections > a")
@@ -67,7 +69,7 @@ const puppeteer = require('puppeteer');
     });
     
     // Create a new array with only the first 5 items
-    console.log(items.slice(0, 10));
+    console.log(items.slice(0, 50));
 
 })();
 
