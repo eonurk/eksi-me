@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>eksi-me</title>
+        <meta
+            name="description"
+            content="hmm... öyle işte abi boşver çok da kasma"
+        />
+        <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+        <link rel="stylesheet" href="./style.css">
+    </head>
+    <body>
+    <div id="app">
+        <form class="form-wrapper" @submit.prevent="checkForUsername" >
+            <header class="site-header"></header>
+            <main>
+                <h1>en kutsal 10 takipçimi göster</h1>
+                <h3>tanım: son 100 entry'nize bakıp hangi yazarların sizi en çok favorilediğini gösteren bir hede</h3>
+                <input
+                    v-model="username"
+                    type="text"
+                    name="username"
+                    title="Düzgün girmesek mi?"
+                    class="input-username"
+                    minlength="3"
+                    maxlength="30"
+                    required
+                    placeholder="nick'iniz (ssg, kanzuk falan)"
+                    pattern="^[a-z0-9 -]+"
+                    @keyup.enter="checkForUsername"
+                />
+
+                
+
+                <div class="status">
+                    <span class="status-label">durumlar</span>
+                    <div v-show="!error && !loading" class="status-message">
+                        <span class="circle green"></span>
+                        müsait
+                        <ul>
+                            <li v-for="u in data">{{ u[0] }},{{ u[1] }}</li>
+                        </ul>
+                    </div>
+                    <div v-show="error && !loading" class="status-message">
+                        <span class="circle red"></span>
+                        {{ error }}
+                    </div>
+                    <div v-show="!loading && !error && username.length && !data.length" class="status-message">
+                        <span class="circle gray"></span>
+                        daha bakmadık ki :(
+                    </div>
+                    <div v-show="loading" class="status-message">
+                        <div class="spinner-wrapper">
+                                <span class="spinner"></span>
+                        </div>
+                        bekleyelim azıcık!
+                    </div>
+                </div>
+                <input class="button" value="hadi bakalım" :disabled="loading" @click="checkForUsername" />
+            </main>
+        </form>
+    </div>
+        <p class="disclaimer">ekşi sözlük ile bir alakamız bulunmamaktadır. tamamiyle zevkine yapılmış bir projedir.</p>
+        <!-- <div class="copy">
+            Feel free to <a href="mailto:hello@instagram-username.com">say hello</a>
+            <a href="https://github.com/cedevita/instagram-username" target="_blank" rel="noopener noreferrer">
+                <img width="20" height="20" src="./github-icon.svg" alt="Instagram Username Github">
+            </a>
+        </div> -->
+
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script>
+            window.app = new Vue({
+                el: '#app',
+                data() {
+                    return {
+                        username: '',
+                        data: [],
+                        loading: false,
+                        error: null,
+                    };
+                },
+                methods: {
+                    checkForUsername() {
+                        this.error = null;
+                        this.loading = true;
+                        fetch(`/check?q=${encodeURIComponent(this.username.replace(/ /g, '-'))}`)
+                            .then((resp) => resp.json())
+                            .then((data) => {
+                                console.log(data);
+                                if (data.error) {
+                                    this.error = data.error;
+                                } else {
+                                    this.data = data;
+                                }
+                            })
+                            .catch((...e) => {
+                                console.error('Failed to get response', ...e)
+                                this.error = 'unknown error';
+                            })
+                            .then(() => {
+                                this.loading = false;
+                            });
+                    },
+                },
+            });
+        </script>
+    </body>
+</html>
