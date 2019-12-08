@@ -28,7 +28,7 @@ app.get('/check', function(req, res) {
     const { q } = req.query;
     if (!q || !q.length) {
         return res.json({
-            error: 'q parameter is empty',
+            error: 'doldurmamız lazım ama buraları...',
         });
     }
     eksi.parseEksi(req.query.q)
@@ -37,6 +37,6 @@ app.get('/check', function(req, res) {
         })
         .catch((...e) => {
             console.error('Failed to get data', ...e);
-            res.json({ error: 'Oops something went wrong :('})
+            res.json({ error: 'olmadı ya, bi şeyler ters gitti :('})
         })
 });

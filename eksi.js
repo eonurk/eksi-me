@@ -1,83 +1,81 @@
-const puppeteer = require('puppeteer');
-// const cacheMap = {};
+const cheerio = require('cheerio');
+const fs = require('fs').promises;
+const tough = require('tough-cookie');
 
-function make_url(text){
-    return text.replace(" ", "-")
-}
+// const HOST = 'http://localhost:5000';
+const HOST = 'https://eksisozluk.com/';
+const cacheMap = {};
 
-async function autoScroll(page){
-    await page.evaluate(async () => {
-        await new Promise((resolve, reject) => {
-            var totalHeight = 0;
-            var distance = 100;
-            var timer = setInterval(() => {
-                var scrollHeight = document.body.scrollHeight;
-                window.scrollBy(0, distance);
-                totalHeight += distance;
+const request = require('request-promise-native').defaults({
+    jar: true,
+    baseUrl: HOST,
+    followAllRedirects: true,
+    headers: {
+        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
+    },
+    transform: cheerio.load,
+});
 
-                if(totalHeight >= scrollHeight){
-                    clearInterval(timer);
-                    resolve();
-                }
-            }, 10);
-        });
+async function login() {
+    //console.log('logging in')
+    //console.log('fetching login page')
+    let $ = await request.get('/giris?returnUrl=https%3A%2F%2Feksisozluk.com%2F');
+    //await fs.writeFile('login.html', $.html());
+    const token = $('input[name=__RequestVerificationToken]').attr('value');
+
+    console.log('trying login');
+    $ = await request.post('/giris', {
+        method: 'POST',
+        form: {
+            __RequestVerificationToken: token,
+            ReturnUrl: HOST,
+            UserName: process.env.MAIL,
+            Password: process.env.PASS,
+            RememberMe: false,
+        },
     });
+    //await fs.writeFile('after-login.html', $.html());
+    console.log('logged in');
 }
+
+const AJAX = {
+    headers: { 'x-requested-with': 'XMLHttpRequest' },
+};
 
 async function parseEksi(username) {
-    // var username = process.argv.slice(-1).toString()
-    // var counter = Integer process.argv.slice(-1)
-    // console.log(counter)
-    //if (cacheMap[username] && cacheMap[username].length) {
-    //   return cacheMap[username];
-    //}
-    console.log('starting browser for:', username)
-    const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    console.log('logging in for:', username)
-    const page = await browser.newPage();
-    await page.goto('https://eksisozluk.com/giris', {waitUntil: 'networkidle2'});
-    await page.waitFor('input[id=username]');
-    await page.$eval('input[id=username]', el => el.value = 'restoqr06@gmail.com');
-    await page.$eval('input[id=password]', el => el.value = 'Qwer1234');
-    await page.click('button[class="btn btn-primary btn-lg btn-block"]');
 
-    username = make_url(username)
-    console.log("User: " + username)
-    await page.goto('http://eksisozluk.com/biri/'+ username);
-
-    let changed = true;
-    var counter = 10
-    var i = 0
-    while (changed && i < counter){
-        await page.click("#profile-stats-sections > a")
-        .then(()=> {
-            if ( (i+1) % 5 == 0){
-                console.log((i+1)*10 + " entry işlendi, az sabır!")
-            }
-            i++;
-        })
-        .catch(() => changed=false);
-        await autoScroll(page);
+    if (cacheMap[username] && cacheMap[username].length) {
+       return cacheMap[username];
     }
 
-    let handles = await page.$$('a.favorite-count.toggles');
+    await login();
+    let userlist = []
+    const USERNAME = (username || '').replace(' ', '-');
+    console.log(`Getting profile for username=${USERNAME}`);
+    let $ = await request.get(`/biri/${USERNAME}`);
+    //await fs.writeFile(`biri-${USERNAME}.html`, $.html());
+    let total = 50;
 
-    for (let handle of handles){
-        try {
-            await handle.click();
+    for (let i = 1; i <= 5 && total > (i*10); ++i) {
+        if (i == 1) {
+            total = $('#entry-count-total').text();
         }
-        catch(err){
-        }
+        //console.log(`Getting entries for username=${USERNAME} page=${i}`);
+        $ = await request.get(`/son-entryleri?nick=${USERNAME}&p=${i}`, AJAX);
+        const entries = Array.from($('[data-favorite-count]')).map(e => $(e).data());
+        //console.log(`Got entries for username=${USERNAME} page=${i} count=${entries.length}`)
+        //await fs.writeFile(`entries-${USERNAME}-p${i}.html`, $.html());
+        //console.log(entries);
+        let reqs = entries.filter(e => e.favoriteCount)
+            .map(e => request.get(`/entry/favorileyenler?entryId=${e.id}&_=${Date.now()}`, AJAX))
+        const favs = (await Promise.all(reqs))
+            .map($r => Array.from($r('li:not(.separated) a')).map(e => $(e).attr('href').split('/')[2]))
+            .flat();
+        userlist = userlist.concat(favs)
+        //console.log(favs.flat());
     }
-    let userlist = await page.evaluate(() =>
-    Array.from(document.querySelectorAll('div > ul > li > a[target=_blank]'),
-    element => element.textContent));
-
-    await browser.close();
-
+    console.log(`Done for username:${USERNAME}`)
+    
     table = {}
     for (user of userlist){
         if (!table[user]){
@@ -95,10 +93,11 @@ async function parseEksi(username) {
 
     items = items.slice(0, 10);
     // Create a new array with only the first 5 items
-    //return cacheMap[username] = items;
-    return items;
+    return cacheMap[username] = items;
+    
 }
 
 module.exports = {
     parseEksi,
 };
+
