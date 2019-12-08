@@ -29,8 +29,8 @@ async function login() {
         form: {
             __RequestVerificationToken: token,
             ReturnUrl: HOST,
-            UserName: process.env.MAIL,
-            Password: process.env.PASS,
+            UserName:  process.env.MAIL,
+            Password:  process.env.PASS,
             RememberMe: false,
         },
     });

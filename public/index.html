@@ -17,7 +17,7 @@
         <form class="form-wrapper" @submit.prevent="checkForUsername" >
             <header class="site-header"></header>
             <main>
-                <h1>en kutsal 10 takipçimi göster</h1>
+                <h1>eksi-me</h1>
                 <h3>tanım: son 100 entry'nize bakıp hangi yazarların sizi en çok favorilediğini gösteren bir hede</h3>
                 <input
                     v-model="username"
@@ -26,7 +26,7 @@
                     title="Düzgün girmesek mi?"
                     class="input-username"
                     minlength="3"
-                    maxlength="30"
+                    maxlength="50"
                     required
                     placeholder="nick'iniz (ssg, kanzuk falan)"
                     pattern="^[a-z0-9 -]+"
@@ -40,10 +40,8 @@
                     <div v-show="!error && !loading" class="status-message">
                         <span class="circle green"></span>
                         müsait
-                        <ul>
-                            <li v-for="u in data">{{ u[0] }},{{ u[1] }}</li>
-                        </ul>
                     </div>
+                    
                     <div v-show="error && !loading" class="status-message">
                         <span class="circle red"></span>
                         {{ error }}
@@ -59,11 +57,27 @@
                         bekleyelim azıcık!
                     </div>
                 </div>
+                <div v-show="!error && !loading" class="status-message">
+                    <table>
+                        <tbody>
+                            <tr v-for="u in data">
+                                <td><a :href="'https://eksisozluk.com/biri/'+ u[0]"> {{ u[0] }}</a></td>
+                                <td style="padding-left: 10px">{{u[1]}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                        <!-- <ul>
+                            <li v-for="u in data">
+                                <a :href="'https://eksisozluk.com/biri/'+ u[0]"> {{ u[0] }}</a>
+                                {{u[1]}}
+                            </li>
+                        </ul> -->
+                </div>
                 <input class="button" value="hadi bakalım" :disabled="loading" @click="checkForUsername" />
             </main>
         </form>
     </div>
-        <p class="disclaimer">ekşi sözlük ile bir alakamız bulunmamaktadır. tamamiyle zevkine yapılmış bir projedir.</p>
+        <p class="disclaimer">ekşi sözlük ile bir alakamız bulunmamaktadır.</p>
         <!-- <div class="copy">
             Feel free to <a href="mailto:hello@instagram-username.com">say hello</a>
             <a href="https://github.com/cedevita/instagram-username" target="_blank" rel="noopener noreferrer">
