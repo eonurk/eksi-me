@@ -2,9 +2,12 @@
   "name": "eksi-me",
   "version": "1.0.1",
   "main": "index.js",
-  "repository": "git@github.com:eonurk/eksi-me.git",
   "authors": "EO Karakaslar, FM Akdemir",
   "license": "MIT",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
     "ejs": "^3.0.1",
@@ -12,5 +15,9 @@
     "request": "^2.88.0",
     "request-promise-native": "^1.0.8",
     "tough-cookie": "^3.0.1"
-  }
+  },
+    "repository": {
+    "type": "git",
+    "url": "https://github.com/heroku/node-js-sample"
+  },
 }
