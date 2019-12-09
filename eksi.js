@@ -56,7 +56,7 @@ async function parseEksi(username) {
     //await fs.writeFile(`biri-${USERNAME}.html`, $.html());
     let total = 50;
 
-    for (let i = 1; i <= 10 && total > (i*10); ++i) {
+    for (let i = 1; i <= 5 && total > (i*10); ++i) {
         if (i == 1) {
             total = $('#entry-count-total').text();
         }
