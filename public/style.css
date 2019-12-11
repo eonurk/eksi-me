@@ -162,6 +162,7 @@ p {
   border-radius: 5px;
   border: none;
   outline: none;
+  touch-action: manipulation;
 }
 .button:disabled {
   pointer-events: none;
