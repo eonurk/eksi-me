@@ -2,8 +2,6 @@
 
 [eksisozluk](https://www.eksisozluk.com/) is a very popular social media platform in Turkey and this app shows eksi users their most devoted followers.
 
-A Node.js app using [Express](http://expressjs.com/) and [Vue.js](http://vuejs.org)
-
 ## Running Locally
 
 Make sure you have [Node.js](http://nodejs.org/) and the [Heroku Toolbelt](https://toolbelt.heroku.com/) installed.
