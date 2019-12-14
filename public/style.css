@@ -26,6 +26,10 @@ body {
   background-repeat: no-repeat;
 }
 
+form input[type="text"] {
+    text-transform: lowercase;
+}
+
 @media (min-width: 641px) {
   .site-header::before {
     top: -50%;
