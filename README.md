@@ -1,6 +1,7 @@
 # eksi-me
 
 [eksisozluk](https://www.eksisozluk.com/) is a very popular social media platform in Turkey and this app shows eksi users their most devoted followers.
+To check out: [click here](https://eksi-me.herokuapp.com/)
 
 ## Running Locally
 
