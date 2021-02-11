@@ -2,6 +2,8 @@
 
 [eksisozluk](https://www.eksisozluk.com/) is a very popular social media platform in Turkey and this app shows eksi users their most devoted followers.
 
+It scrapes last 100 entries of a user and counts the `şuku`s that other users gave to those entries. It is easy and fun lol.
+
 To check out: [click here](https://eksi-me.herokuapp.com/)
 
 ## Running Locally
