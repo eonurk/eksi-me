@@ -4,7 +4,9 @@
 
 It scrapes last 100 entries of a user and counts the `şuku`s that other users gave to those entries. It is easy and fun lol.
 
-To check out: [click here](https://eksi-me.herokuapp.com/)
+[Click here](https://eksi-me.herokuapp.com/) to check it out!
+
+> It may take a while to load the site since dynos of heroku sleeps after a while and they need some time to reload.
 
 ## Running Locally
 
